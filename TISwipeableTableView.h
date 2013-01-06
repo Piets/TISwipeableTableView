@@ -63,6 +63,7 @@
 @protocol TISwipeableTableViewCellDelegate <NSObject>
 - (BOOL)tableView:(UITableView *)tableView shouldSwipeCellAtIndexPath:(NSIndexPath *)indexPath;
 - (void)tableView:(UITableView *)tableView didSwipeCellAtIndexPath:(NSIndexPath *)indexPath;
+- (void)tableView:(UITableView *)tableView didHideBackViewOfCellAtIndexPath:(NSIndexPath *)indexPath;
 @end
 
 @interface TISwipeableTableViewCell : UITableViewCell <UIGestureRecognizerDelegate> {

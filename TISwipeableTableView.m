@@ -56,7 +56,18 @@
         NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
         if (state==UIGestureRecognizerStateBegan)
         {
-            self.indexOfPanningBackView = indexPath;
+            if (velocity.x<=0)
+            {
+                self.indexOfPanningBackView = indexPath;
+            }
+            else
+            {
+                TISwipeableTableViewCell *cell = (TISwipeableTableViewCell*)[self.tableView cellForRowAtIndexPath:indexPath];
+                if ([cell respondsToSelector:@selector(onBackViewSwiped:)]){
+                    [cell performSelector:@selector(onBackViewSwiped:) withObject:gesture];
+                    [self setIndexOfVisibleBackView:nil];
+                }
+            }
         }
     }
 
@@ -118,6 +129,12 @@
 	
 	[self hideVisibleBackView:YES];
 	[self setIndexOfVisibleBackView:indexPath];
+}
+
+- (void)tableView:(UITableView *)tableView didHideBackViewOfCellAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSLog(@"...hide");
+    [self setIndexOfVisibleBackView:nil];
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
@@ -215,9 +232,9 @@
 	[backView setClipsToBounds:YES];
 	[backView setHidden:YES];
     
-    UISwipeGestureRecognizer *backViewSwipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(onBackViewSwiped:)];
-    [backViewSwipeGestureRecognizer setDirection:UISwipeGestureRecognizerDirectionRight];
-    [backView addGestureRecognizer:backViewSwipeGestureRecognizer];
+//    UISwipeGestureRecognizer *backViewSwipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(onBackViewSwiped:)];
+//    [backViewSwipeGestureRecognizer setDirection:UISwipeGestureRecognizerDirectionRight];
+//    [backView addGestureRecognizer:backViewSwipeGestureRecognizer];
     
 	
 	[self addSubview:backView];
@@ -240,7 +257,7 @@
 	[super setFrame:aFrame];
 	
 	CGRect newBounds = self.bounds;
-	newBounds.size.height -= 1;
+	//newBounds.size.height -= 1;
 	[backView setFrame:newBounds];	
 	[contentView setFrame:newBounds];
 }
@@ -323,7 +340,6 @@
             UIGestureRecognizerState state = [recognizer state];
             if (state==UIGestureRecognizerStateBegan)
             {
-                
             }
             else if (state==UIGestureRecognizerStateChanged)
             {
@@ -368,6 +384,9 @@
                 else
                 {
                     [self hideBackViewAnimated:YES];
+                    if ([self.delegate respondsToSelector:@selector(tableView:didHideBackViewOfCellAtIndexPath:)]){
+                        [self.delegate tableView:tableView didHideBackViewOfCellAtIndexPath:myIndexPath];
+                    }
                 }
             }
 			
@@ -417,7 +436,7 @@
 		[contentView.layer setPosition:CGPointMake(-contentView.frame.size.width, contentView.layer.position.y)];
     
 		if (animated){
-			
+
 			CABasicAnimation * animation = [CABasicAnimation animationWithKeyPath:@"position.x"];
 			[animation setRemovedOnCompletion:NO];
 			[animation setDelegate:self];
@@ -446,7 +465,7 @@
 		if (animated){
 			
 			CGFloat hideDuration = 0.09;
-			
+
 			[backView.layer setOpacity:0.0];
 			CABasicAnimation * hideAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
 			[hideAnimation setFromValue:[NSNumber numberWithFloat:1.0]];
@@ -472,7 +491,7 @@
 }
 
 - (void)resetViews:(BOOL)animated {
-	
+
 	[contentView.layer removeAllAnimations];
 	[backView.layer removeAllAnimations];
 	
