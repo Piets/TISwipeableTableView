@@ -24,7 +24,7 @@
 	navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
 	[viewController release];
 	
-	[window addSubview:navigationController.view];
+	[window setRootViewController:navigationController];
     [window makeKeyAndVisible];
 	
 	return YES;

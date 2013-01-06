@@ -44,6 +44,10 @@
 
 - (void)drawContentView:(CGRect)rect {
 	
+    [[UIColor whiteColor] setFill];
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextFillRect(context, rect);
+    
 	UIColor * textColour = (self.selected || self.highlighted) ? [UIColor whiteColor] : [UIColor blackColor];	
 	[textColour set];
 	

@@ -32,9 +32,7 @@
 // - TISwipeableTableViewController
 //==========================================================
 
-@interface TISwipeableTableViewController : UITableViewController {
-	NSIndexPath * indexOfVisibleBackView;
-}
+@interface TISwipeableTableViewController : UITableViewController
 
 @property (nonatomic, retain, readonly) NSIndexPath * indexOfVisibleBackView;
 
