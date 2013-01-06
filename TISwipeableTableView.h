@@ -32,10 +32,11 @@
 // - TISwipeableTableViewController
 //==========================================================
 
-@interface TISwipeableTableViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
+@interface TISwipeableTableViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIGestureRecognizerDelegate>
 
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong, readonly) NSIndexPath * indexOfVisibleBackView;
+@property (nonatomic, assign) UITableViewStyle tableViewStyle;
 
 - (id)initWithStyle:(UITableViewStyle)tableViewStyle;
 

@@ -15,6 +15,7 @@
 
 @interface TISwipeableTableViewController ()
 @property (nonatomic, strong) NSIndexPath * indexOfVisibleBackView;
+@property (nonatomic, strong) NSIndexPath * indexOfPanningBackView;
 @end
 
 @implementation TISwipeableTableViewController
@@ -24,12 +25,77 @@
 {
     self = [super init];
     if (self){
-        _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, [self.view bounds].size.width, [self.view bounds].size.height) style:tableViewStyle];
-        _tableView.delegate = self;
-        _tableView.dataSource = self;
-        [self.view addSubview:_tableView];
+        _tableViewStyle = tableViewStyle;
     }
     return self;
+}
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    
+    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, [self.view bounds].size.width, [self.view bounds].size.height) style:self.tableViewStyle];
+    _tableView.autoresizingMask = UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleWidth;
+    _tableView.delegate = self;
+    _tableView.dataSource = self;
+    [self.view addSubview:_tableView];
+    
+    UIPanGestureRecognizer *tableViewPanGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(onTableViewPanned:)];
+    [tableViewPanGestureRecognizer setDelegate:self];
+    [_tableView addGestureRecognizer:tableViewPanGestureRecognizer];
+}
+
+- (void)onTableViewPanned:(UIPanGestureRecognizer*)gesture
+{
+    CGPoint velocity = [gesture velocityInView:self.tableView];
+    UIGestureRecognizerState state = [gesture state];
+    
+    if (fabs(velocity.x)>fabs(velocity.y))
+    {
+        CGPoint location = [gesture locationInView:self.tableView];
+        NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
+        if (state==UIGestureRecognizerStateBegan)
+        {
+            self.indexOfPanningBackView = indexPath;
+        }
+    }
+
+    if (self.indexOfPanningBackView)
+    {
+        if (state==UIGestureRecognizerStateChanged)
+        {
+            TISwipeableTableViewCell *cell = (TISwipeableTableViewCell*)[self.tableView cellForRowAtIndexPath:self.indexOfPanningBackView];
+            [cell performSelector:@selector(cellWasPanned:) withObject:gesture];
+        }
+        else if (state==UIGestureRecognizerStateEnded)
+        {
+            TISwipeableTableViewCell *cell = (TISwipeableTableViewCell*)[self.tableView cellForRowAtIndexPath:self.indexOfPanningBackView];
+            [cell performSelector:@selector(cellWasPanned:) withObject:gesture];
+            self.indexOfPanningBackView = nil;
+        }
+    }
+    
+    
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+    CGPoint velocity = [(UIPanGestureRecognizer*)gestureRecognizer velocityInView:self.tableView];
+    if ( fabs(velocity.x) > fabs(velocity.y))
+    {
+        
+        NSString *otherGestureRecognizerClassName = NSStringFromClass([otherGestureRecognizer class]);
+        if ([otherGestureRecognizerClassName rangeOfString:@"UIScrollView"].location!=NSNotFound && [otherGestureRecognizerClassName rangeOfString:@"PanGestureRecognizer"].location!=NSNotFound)
+        {
+            return NO;
+        }
+        else return YES;
+    }
+    else
+    {
+        return YES;
+    }
+
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -133,15 +199,22 @@
 	[contentView setClipsToBounds:YES];
 	[contentView setOpaque:YES];
 	
-	UISwipeGestureRecognizer * swipeRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(cellWasSwiped:)];
-	[swipeRecognizer setDirection:(UISwipeGestureRecognizerDirectionLeft |
-								   UISwipeGestureRecognizerDirectionRight)];
-	[contentView addGestureRecognizer:swipeRecognizer];
+//	UISwipeGestureRecognizer * swipeRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(cellWasSwiped:)];
+//	[swipeRecognizer setDirection:(UISwipeGestureRecognizerDirectionLeft |
+//								   UISwipeGestureRecognizerDirectionRight)];
+//	[contentView addGestureRecognizer:swipeRecognizer];
+//    UIPanGestureRecognizer *panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(cellWasPanned:)];
+//    [contentView addGestureRecognizer:panRecognizer];
 	
 	backView = [[TISwipeableTableViewCellBackView alloc] initWithFrame:CGRectZero];
 	[backView setOpaque:YES];
 	[backView setClipsToBounds:YES];
 	[backView setHidden:YES];
+    
+    UISwipeGestureRecognizer *backViewSwipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(onBackViewSwiped:)];
+    [backViewSwipeGestureRecognizer setDirection:UISwipeGestureRecognizerDirectionRight];
+    [backView addGestureRecognizer:backViewSwipeGestureRecognizer];
+    
 	
 	[self addSubview:backView];
 	[self addSubview:contentView];
@@ -232,6 +305,73 @@
 //===============================//
 
 #pragma mark - Back View Show / Hide
+
+- (void)cellWasPanned:(UIPanGestureRecognizer*)recognizer{
+    
+    UITableView * tableView = (UITableView *)self.superview;
+    
+    if ([self.delegate respondsToSelector:@selector(tableView:shouldSwipeCellAtIndexPath:)]){
+        
+        NSIndexPath * myIndexPath = [tableView indexPathForCell:self];
+		
+		if ([self.delegate tableView:tableView shouldSwipeCellAtIndexPath:myIndexPath]){
+			
+            UIGestureRecognizerState state = [recognizer state];
+            if (state==UIGestureRecognizerStateBegan)
+            {
+                
+            }
+            else if (state==UIGestureRecognizerStateChanged)
+            {
+                CGPoint translation = [recognizer translationInView:self];
+                
+                [contentView.layer setAnchorPoint:CGPointMake(0, 0.5)];
+                if (translation.x<=0)
+                {
+                    [contentView.layer setPosition:CGPointMake(translation.x, contentView.layer.position.y)];
+                    
+                    contentViewMoving = YES;
+                    
+                    [backView.layer setHidden:NO];
+                    [backView setNeedsDisplay];
+                    
+                    [self backViewWillAppear:NO];
+                    
+                    oldStyle = self.selectionStyle;
+                    [self setSelectionStyle:UITableViewCellSelectionStyleNone];
+                }
+                else
+                {
+                    [contentView.layer setPosition:CGPointMake(0, contentView.layer.position.y)];
+                }
+                
+
+            }
+            else if (state==UIGestureRecognizerStateEnded || state==UIGestureRecognizerStateFailed || state==UIGestureRecognizerStateCancelled)
+            {
+                CGPoint translation = [recognizer translationInView:self];
+                if (translation.x < -60)
+                {
+                    contentViewMoving = NO;
+                    backView.layer.hidden = YES;
+                    
+                    [self revealBackViewAnimated:YES];
+                    
+                    if ([self.delegate respondsToSelector:@selector(tableView:didSwipeCellAtIndexPath:)]){
+                        [self.delegate tableView:tableView didSwipeCellAtIndexPath:myIndexPath];
+                    }
+                }
+                else
+                {
+                    [self hideBackViewAnimated:YES];
+                }
+            }
+			
+		}
+
+    }
+}
+
 - (void)cellWasSwiped:(UISwipeGestureRecognizer *)recognizer {
     
 	UITableView * tableView = (UITableView *)self.superview;
@@ -251,10 +391,14 @@
 	}
 }
 
+- (void)onBackViewSwiped:(UISwipeGestureRecognizer*)gesture
+{
+    [self hideBackViewAnimated:YES];
+}
+
 - (void)revealBackViewAnimated:(BOOL)animated {
 	
 	if (!contentViewMoving && backView.hidden){
-		
 		contentViewMoving = YES;
 		
 		[backView.layer setHidden:NO];
@@ -266,8 +410,8 @@
 		[self setSelectionStyle:UITableViewCellSelectionStyleNone];
 		
 		[contentView.layer setAnchorPoint:CGPointMake(0, 0.5)];
-		[contentView.layer setPosition:CGPointMake(contentView.frame.size.width, contentView.layer.position.y)];
-		
+		[contentView.layer setPosition:CGPointMake(-contentView.frame.size.width, contentView.layer.position.y)];
+    
 		if (animated){
 			
 			CABasicAnimation * animation = [CABasicAnimation animationWithKeyPath:@"position.x"];
@@ -420,4 +564,5 @@
 	NSString * extraInfo = backView.hidden ? @"ContentView visible": @"BackView visible";
 	return [NSString stringWithFormat:@"<TISwipeableTableViewCell %p; '%@'>", self, extraInfo];
 }
+
 @end
