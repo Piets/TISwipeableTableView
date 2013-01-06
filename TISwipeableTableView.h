@@ -37,6 +37,7 @@
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong, readonly) NSIndexPath * indexOfVisibleBackView;
 @property (nonatomic, assign) UITableViewStyle tableViewStyle;
+@property (nonatomic, strong) UIPanGestureRecognizer *tablePanGestureRecognizer;
 
 - (id)initWithStyle:(UITableViewStyle)tableViewStyle;
 

@@ -40,9 +40,9 @@
     _tableView.dataSource = self;
     [self.view addSubview:_tableView];
     
-    UIPanGestureRecognizer *tableViewPanGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(onTableViewPanned:)];
-    [tableViewPanGestureRecognizer setDelegate:self];
-    [_tableView addGestureRecognizer:tableViewPanGestureRecognizer];
+    self.tablePanGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(onTableViewPanned:)];
+    [self.tablePanGestureRecognizer setDelegate:self];
+    [_tableView addGestureRecognizer:self.tablePanGestureRecognizer];
 }
 
 - (void)onTableViewPanned:(UIPanGestureRecognizer*)gesture
@@ -65,12 +65,16 @@
         if (state==UIGestureRecognizerStateChanged)
         {
             TISwipeableTableViewCell *cell = (TISwipeableTableViewCell*)[self.tableView cellForRowAtIndexPath:self.indexOfPanningBackView];
-            [cell performSelector:@selector(cellWasPanned:) withObject:gesture];
+            if ([cell respondsToSelector:@selector(cellWasPanned:)]){
+                [cell performSelector:@selector(cellWasPanned:) withObject:gesture];
+            }
         }
         else if (state==UIGestureRecognizerStateEnded)
         {
             TISwipeableTableViewCell *cell = (TISwipeableTableViewCell*)[self.tableView cellForRowAtIndexPath:self.indexOfPanningBackView];
-            [cell performSelector:@selector(cellWasPanned:) withObject:gesture];
+            if ([cell respondsToSelector:@selector(cellWasPanned:)]){
+                [cell performSelector:@selector(cellWasPanned:) withObject:gesture];
+            }
             self.indexOfPanningBackView = nil;
         }
     }
