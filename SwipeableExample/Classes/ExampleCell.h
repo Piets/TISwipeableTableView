@@ -11,17 +11,17 @@
 
 @class ExampleCell;
 
-@protocol ExampleCellDelegate <NSObject>
+@protocol ExampleCellDelegate <TISwipeableTableViewCellDelegate>
 - (void)cellBackButtonWasTapped:(ExampleCell *)cell;
 @end
 
 @interface ExampleCell : TISwipeableTableViewCell {
 	
-	id <ExampleCellDelegate> delegate;
+	id <ExampleCellDelegate> __unsafe_unretained delegate;
 	NSString * text;
 }
 
-@property (nonatomic, assign) id <ExampleCellDelegate> delegate;
+@property (nonatomic, unsafe_unretained) id <ExampleCellDelegate> delegate;
 @property (nonatomic, copy) NSString * text;
 
 - (void)drawShadowsWithHeight:(CGFloat)shadowHeight opacity:(CGFloat)opacity InRect:(CGRect)rect forContext:(CGContextRef)context;

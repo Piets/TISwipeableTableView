@@ -15,7 +15,6 @@
 - (void)setText:(NSString *)aString {
 	
 	NSString * copy = [aString copy];
-	[text release];
 	text = copy;
 	
 	[self setNeedsDisplay];
@@ -85,9 +84,5 @@
 	CGGradientRelease(bottomGradient);
 }
 
-- (void)dealloc {
-	[text release];
-    [super dealloc];
-}
 
 @end

@@ -37,8 +37,8 @@
     static NSString *CellIdentifier = @"Cell";
 	
 	ExampleCell * cell = (ExampleCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (!cell) cell = [[[ExampleCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
-    
+    if (!cell) cell = [[ExampleCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+    [cell setDelegate:self];
 	[cell setText:[NSString stringWithFormat:@"Swipe me! (Row %i)", indexPath.row]];
 	[cell setDelegate:self];
 	
@@ -58,7 +58,6 @@
 											   otherButtonTitles:nil];
 	
 	[alertView show];
-	[alertView release];
 	
 	[tableView deselectRowAtIndexPath:indexPath animated:YES];
 	[super tableView:tableView didSelectRowAtIndexPath:indexPath];
@@ -77,7 +76,7 @@ static void completionCallback(SystemSoundID soundID, void * clientData) {
 	NSURL * fileURL = [NSURL fileURLWithPath:path isDirectory:NO];
 	
 	SystemSoundID soundID;
-	AudioServicesCreateSystemSoundID((CFURLRef)fileURL, &soundID);
+	AudioServicesCreateSystemSoundID((__bridge CFURLRef)fileURL, &soundID);
 	AudioServicesPlaySystemSound(soundID);
 	AudioServicesAddSystemSoundCompletion (soundID, NULL, NULL, completionCallback, NULL);
 }
@@ -89,7 +88,6 @@ static void completionCallback(SystemSoundID soundID, void * clientData) {
 														delegate:nil cancelButtonTitle:@"Sorry" 
 											   otherButtonTitles:nil];
 	[alertView show];
-	[alertView release];
 	
 	[self hideVisibleBackView:YES];
 }

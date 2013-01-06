@@ -22,7 +22,6 @@
 	
 	RootViewController * viewController = [[RootViewController alloc] initWithStyle:UITableViewStylePlain];
 	navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-	[viewController release];
 	
 	[window setRootViewController:navigationController];
     [window makeKeyAndVisible];
@@ -33,11 +32,6 @@
 #pragma mark -
 #pragma mark Memory management
 
-- (void)dealloc {
-	[navigationController release];
-	[window release];
-	[super dealloc];
-}
 
 
 @end

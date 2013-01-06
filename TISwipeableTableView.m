@@ -14,7 +14,7 @@
 //==========================================================
 
 @interface TISwipeableTableViewController ()
-@property (nonatomic, retain) NSIndexPath * indexOfVisibleBackView;
+@property (nonatomic, strong) NSIndexPath * indexOfVisibleBackView;
 @end
 
 @implementation TISwipeableTableViewController
@@ -75,10 +75,6 @@
 	}
 }
 
-- (void)dealloc {
-	[indexOfVisibleBackView release];
-	[super dealloc];
-}
 
 @end
 
@@ -141,7 +137,6 @@
 	[swipeRecognizer setDirection:(UISwipeGestureRecognizerDirectionLeft |
 								   UISwipeGestureRecognizerDirectionRight)];
 	[contentView addGestureRecognizer:swipeRecognizer];
-	[swipeRecognizer release];
 	
 	backView = [[TISwipeableTableViewCellBackView alloc] initWithFrame:CGRectZero];
 	[backView setOpaque:YES];
@@ -151,8 +146,6 @@
 	[self addSubview:backView];
 	[self addSubview:contentView];
 	
-	[contentView release];
-	[backView release];
 	
 	contentViewMoving = NO;
 	shouldBounce = YES;
@@ -242,18 +235,17 @@
 - (void)cellWasSwiped:(UISwipeGestureRecognizer *)recognizer {
     
 	UITableView * tableView = (UITableView *)self.superview;
-	id delegate = tableView.nextResponder; // Hopefully this is a TISwipeableTableViewController.
 	
-	if ([delegate respondsToSelector:@selector(tableView:shouldSwipeCellAtIndexPath:)]){
+	if ([self.delegate respondsToSelector:@selector(tableView:shouldSwipeCellAtIndexPath:)]){
 	
 		NSIndexPath * myIndexPath = [tableView indexPathForCell:self];
 		
-		if ([delegate tableView:tableView shouldSwipeCellAtIndexPath:myIndexPath]){
+		if ([self.delegate tableView:tableView shouldSwipeCellAtIndexPath:myIndexPath]){
 			
 			[self revealBackViewAnimated:YES];
 			
-			if ([delegate respondsToSelector:@selector(tableView:didSwipeCellAtIndexPath:)]){
-				[delegate tableView:tableView didSwipeCellAtIndexPath:myIndexPath];
+			if ([self.delegate respondsToSelector:@selector(tableView:didSwipeCellAtIndexPath:)]){
+				[self.delegate tableView:tableView didSwipeCellAtIndexPath:myIndexPath];
 			}
 		}
 	}
