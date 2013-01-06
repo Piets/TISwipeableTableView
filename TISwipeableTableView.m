@@ -20,6 +20,18 @@
 @implementation TISwipeableTableViewController
 @synthesize indexOfVisibleBackView;
 
+- (id)initWithStyle:(UITableViewStyle)tableViewStyle
+{
+    self = [super init];
+    if (self){
+        _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, [self.view bounds].size.width, [self.view bounds].size.height) style:tableViewStyle];
+        _tableView.delegate = self;
+        _tableView.dataSource = self;
+        [self.view addSubview:_tableView];
+    }
+    return self;
+}
+
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	return ([indexPath compare:indexOfVisibleBackView] == NSOrderedSame) ? nil : indexPath;
 }
@@ -228,12 +240,12 @@
 
 #pragma mark - Back View Show / Hide
 - (void)cellWasSwiped:(UISwipeGestureRecognizer *)recognizer {
-	
+    
 	UITableView * tableView = (UITableView *)self.superview;
 	id delegate = tableView.nextResponder; // Hopefully this is a TISwipeableTableViewController.
 	
 	if ([delegate respondsToSelector:@selector(tableView:shouldSwipeCellAtIndexPath:)]){
-		
+	
 		NSIndexPath * myIndexPath = [tableView indexPathForCell:self];
 		
 		if ([delegate tableView:tableView shouldSwipeCellAtIndexPath:myIndexPath]){

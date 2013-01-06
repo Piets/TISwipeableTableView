@@ -32,9 +32,12 @@
 // - TISwipeableTableViewController
 //==========================================================
 
-@interface TISwipeableTableViewController : UITableViewController
+@interface TISwipeableTableViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 
+@property (nonatomic, retain) UITableView *tableView;
 @property (nonatomic, retain, readonly) NSIndexPath * indexOfVisibleBackView;
+
+- (id)initWithStyle:(UITableViewStyle)tableViewStyle;
 
 // Thanks to Martin Destagnol (@mdestagnol) for this method.
 - (BOOL)tableView:(UITableView *)tableView shouldSwipeCellAtIndexPath:(NSIndexPath *)indexPath;
