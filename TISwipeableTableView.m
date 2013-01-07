@@ -45,6 +45,32 @@
     [_tableView addGestureRecognizer:self.tablePanGestureRecognizer];
 }
 
+//- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+//{
+//    NSLog(@"should recognizer %@", gestureRecognizer);
+//    if (gestureRecognizer==self.tablePanGestureRecognizer)
+//    {
+//        CGPoint velocity = [(UIPanGestureRecognizer*)gestureRecognizer velocityInView:self.tableView];
+//        if (fabs(velocity.x)>fabs(velocity.y))
+//        {
+//            CGPoint location = [gestureRecognizer locationInView:self.tableView];
+//            NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
+//            if (velocity.x<=0)
+//            {
+//                NSLog(@">>>>>>>>>>>>>> %@ %@", self.indexOfVisibleBackView, indexPath);
+//                if ([self.indexOfVisibleBackView isEqual:indexPath])
+//                {
+//                    return NO;
+//                }
+//                else return YES;
+//            }
+//            else return YES;
+//        }
+//        else return YES;
+//    }
+//    else return YES;
+//}
+
 - (void)onTableViewPanned:(UIPanGestureRecognizer*)gesture
 {
     CGPoint velocity = [gesture velocityInView:self.tableView];
@@ -58,15 +84,23 @@
         {
             if (velocity.x<=0)
             {
-                self.indexOfPanningBackView = indexPath;
+                if ([self.indexOfVisibleBackView isEqual:indexPath])
+                {
+                    self.indexOfPanningBackView = nil;
+                }
+                else self.indexOfPanningBackView = indexPath;
             }
             else
             {
-                TISwipeableTableViewCell *cell = (TISwipeableTableViewCell*)[self.tableView cellForRowAtIndexPath:indexPath];
-                if ([cell respondsToSelector:@selector(onBackViewSwiped:)]){
-                    [cell performSelector:@selector(onBackViewSwiped:) withObject:gesture];
-                    [self setIndexOfVisibleBackView:nil];
+                if ([self.indexOfVisibleBackView isEqual:indexPath])
+                {
+                    TISwipeableTableViewCell *cell = (TISwipeableTableViewCell*)[self.tableView cellForRowAtIndexPath:indexPath];
+                    if ([cell respondsToSelector:@selector(onBackViewSwiped:)]){
+                        [cell performSelector:@selector(onBackViewSwiped:) withObject:gesture];
+                        [self setIndexOfVisibleBackView:nil];
+                    }
                 }
+                
             }
         }
     }
@@ -129,12 +163,6 @@
 	
 	[self hideVisibleBackView:YES];
 	[self setIndexOfVisibleBackView:indexPath];
-}
-
-- (void)tableView:(UITableView *)tableView didHideBackViewOfCellAtIndexPath:(NSIndexPath *)indexPath
-{
-    NSLog(@"...hide");
-    [self setIndexOfVisibleBackView:nil];
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
@@ -383,10 +411,9 @@
                 }
                 else
                 {
+                    
                     [self hideBackViewAnimated:YES];
-                    if ([self.delegate respondsToSelector:@selector(tableView:didHideBackViewOfCellAtIndexPath:)]){
-                        [self.delegate tableView:tableView didHideBackViewOfCellAtIndexPath:myIndexPath];
-                    }
+                    
                 }
             }
 			
