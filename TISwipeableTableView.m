@@ -45,32 +45,6 @@
     [_tableView addGestureRecognizer:self.tablePanGestureRecognizer];
 }
 
-//- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
-//{
-//    NSLog(@"should recognizer %@", gestureRecognizer);
-//    if (gestureRecognizer==self.tablePanGestureRecognizer)
-//    {
-//        CGPoint velocity = [(UIPanGestureRecognizer*)gestureRecognizer velocityInView:self.tableView];
-//        if (fabs(velocity.x)>fabs(velocity.y))
-//        {
-//            CGPoint location = [gestureRecognizer locationInView:self.tableView];
-//            NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
-//            if (velocity.x<=0)
-//            {
-//                NSLog(@">>>>>>>>>>>>>> %@ %@", self.indexOfVisibleBackView, indexPath);
-//                if ([self.indexOfVisibleBackView isEqual:indexPath])
-//                {
-//                    return NO;
-//                }
-//                else return YES;
-//            }
-//            else return YES;
-//        }
-//        else return YES;
-//    }
-//    else return YES;
-//}
-
 - (void)onTableViewPanned:(UIPanGestureRecognizer*)gesture
 {
     CGPoint velocity = [gesture velocityInView:self.tableView];
@@ -88,7 +62,18 @@
                 {
                     self.indexOfPanningBackView = nil;
                 }
-                else self.indexOfPanningBackView = indexPath;
+                else
+                {
+                    if (![self.tableView isDecelerating])
+                    {
+                        self.indexOfPanningBackView = indexPath;
+                        TISwipeableTableViewCell *cell = (TISwipeableTableViewCell*)[self.tableView cellForRowAtIndexPath:self.indexOfPanningBackView];
+                        if ([cell respondsToSelector:@selector(cellWasPanned:)]){
+                            [cell performSelector:@selector(cellWasPanned:) withObject:gesture];
+                        }
+                    }
+                    
+                }
             }
             else
             {
@@ -114,7 +99,7 @@
                 [cell performSelector:@selector(cellWasPanned:) withObject:gesture];
             }
         }
-        else if (state==UIGestureRecognizerStateEnded)
+        else if (state==UIGestureRecognizerStateEnded || state==UIGestureRecognizerStateCancelled || state==UIGestureRecognizerStateFailed)
         {
             TISwipeableTableViewCell *cell = (TISwipeableTableViewCell*)[self.tableView cellForRowAtIndexPath:self.indexOfPanningBackView];
             if ([cell respondsToSelector:@selector(cellWasPanned:)]){
@@ -368,6 +353,9 @@
             UIGestureRecognizerState state = [recognizer state];
             if (state==UIGestureRecognizerStateBegan)
             {
+                if ([self.delegate respondsToSelector:@selector(tableView:didSwipeCellAtIndexPath:)]){
+                    [self.delegate tableView:tableView didSwipeCellAtIndexPath:myIndexPath];
+                }
             }
             else if (state==UIGestureRecognizerStateChanged)
             {
@@ -404,10 +392,6 @@
                     backView.layer.hidden = YES;
                     
                     [self revealBackViewAnimated:YES];
-                    
-                    if ([self.delegate respondsToSelector:@selector(tableView:didSwipeCellAtIndexPath:)]){
-                        [self.delegate tableView:tableView didSwipeCellAtIndexPath:myIndexPath];
-                    }
                 }
                 else
                 {
@@ -468,7 +452,9 @@
 			[animation setRemovedOnCompletion:NO];
 			[animation setDelegate:self];
 			[animation setDuration:0.14];
-			[animation setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear]];
+            CAMediaTimingFunction *function = [CAMediaTimingFunction functionWithControlPoints:0.74 :0.0 :0.74 :0.19];
+			[animation setTimingFunction:function];
+            //[animation setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear]];
 			[contentView.layer addAnimation:animation forKey:@"reveal"];
 		}
 		else
@@ -558,11 +544,15 @@
 
 - (CAAnimationGroup *)bounceAnimationWithHideDuration:(CGFloat)hideDuration initialXOrigin:(CGFloat)originalX {
 	
+    
+    
 	CABasicAnimation * animation0 = [CABasicAnimation animationWithKeyPath:@"position.x"];
 	[animation0 setFromValue:[NSNumber numberWithFloat:originalX]];
 	[animation0 setToValue:[NSNumber numberWithFloat:0]];
 	[animation0 setDuration:hideDuration];
-	[animation0 setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear]];
+	//CAMediaTimingFunction *function = [CAMediaTimingFunction functionWithControlPoints:0.241 :0.348 :0.532 :0.754];
+    //[animation0 setTimingFunction:function];
+    [animation0 setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear]];
 	[animation0 setBeginTime:0];
 	
 	CAAnimationGroup * hideAnimations = [CAAnimationGroup animation];
@@ -585,7 +575,7 @@
 		[animation2 setFromValue:[NSNumber numberWithFloat:-20]];
 		[animation2 setToValue:[NSNumber numberWithFloat:15]];
 		[animation2 setDuration:bounceDuration];
-		[animation2 setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear]];
+        [animation2 setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear]];
 		[animation2 setBeginTime:(hideDuration + bounceDuration)];
 		
 		CABasicAnimation * animation3 = [CABasicAnimation animationWithKeyPath:@"position.x"];
