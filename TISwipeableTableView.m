@@ -72,7 +72,6 @@
                             [cell performSelector:@selector(cellWasPanned:) withObject:gesture];
                         }
                     }
-                    
                 }
             }
             else
@@ -82,7 +81,7 @@
                     TISwipeableTableViewCell *cell = (TISwipeableTableViewCell*)[self.tableView cellForRowAtIndexPath:indexPath];
                     if ([cell respondsToSelector:@selector(onBackViewSwiped:)]){
                         [cell performSelector:@selector(onBackViewSwiped:) withObject:gesture];
-                        [self setIndexOfVisibleBackView:nil];
+                        //[self setIndexOfVisibleBackView:nil];
                     }
                 }
                 
@@ -166,12 +165,17 @@
 	}
 }
 
+- (void)hideBackViewAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated
+{
+    [self setIndexOfVisibleBackView:nil];
+}
+
 - (void)hideVisibleBackView:(BOOL)animated {
 	
 	UITableViewCell * cell = [self.tableView cellForRowAtIndexPath:indexOfVisibleBackView];
 	if ([cell respondsToSelector:@selector(hideBackViewAnimated:)]){
 		[(TISwipeableTableViewCell *)cell hideBackViewAnimated:animated];
-		[self setIndexOfVisibleBackView:nil];
+		//[self setIndexOfVisibleBackView:nil];
 	}
 }
 
@@ -356,29 +360,31 @@
                 if ([self.delegate respondsToSelector:@selector(tableView:didSwipeCellAtIndexPath:)]){
                     [self.delegate tableView:tableView didSwipeCellAtIndexPath:myIndexPath];
                 }
+                [self backViewWillAppear:NO];
             }
             else if (state==UIGestureRecognizerStateChanged)
             {
                 CGPoint translation = [recognizer translationInView:self];
                 
                 [contentView.layer setAnchorPoint:CGPointMake(0, 0.5)];
+                [backView.layer setAnchorPoint:CGPointMake(0, 0.5)];
                 if (translation.x<=0)
                 {
                     [contentView.layer setPosition:CGPointMake(translation.x, contentView.layer.position.y)];
+                    [backView.layer setPosition:CGPointMake(self.frame.size.width+translation.x, contentView.layer.position.y)];
                     
                     contentViewMoving = YES;
                     
                     [backView.layer setHidden:NO];
                     [backView setNeedsDisplay];
-                    
-                    [self backViewWillAppear:NO];
-                    
+
                     oldStyle = self.selectionStyle;
                     [self setSelectionStyle:UITableViewCellSelectionStyleNone];
                 }
                 else
                 {
                     [contentView.layer setPosition:CGPointMake(0, contentView.layer.position.y)];
+                    [backView.layer setPosition:CGPointMake(0, contentView.layer.position.y)];
                 }
                 
 
@@ -444,7 +450,9 @@
 		[self setSelectionStyle:UITableViewCellSelectionStyleNone];
 		
 		[contentView.layer setAnchorPoint:CGPointMake(0, 0.5)];
+        [backView.layer setAnchorPoint:CGPointMake(0, 0.5)];
 		[contentView.layer setPosition:CGPointMake(-contentView.frame.size.width, contentView.layer.position.y)];
+        [backView.layer setPosition:CGPointMake(self.frame.size.width-contentView.frame.size.width, contentView.layer.position.y)];
     
 		if (animated){
 
@@ -456,6 +464,7 @@
 			[animation setTimingFunction:function];
             //[animation setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear]];
 			[contentView.layer addAnimation:animation forKey:@"reveal"];
+            [backView.layer addAnimation:animation forKey:@"reveal"];
 		}
 		else
 		{
@@ -474,6 +483,13 @@
 		contentViewMoving = YES;
 		
 		[self backViewWillDisappear:animated];
+        
+        if ([self.delegate respondsToSelector:@selector(hideBackViewAtIndexPath:animated:)])
+        {
+            UITableView * tableView = (UITableView *)self.superview;
+            NSIndexPath *indexPath = [tableView indexPathForCell:self];
+            [self.delegate hideBackViewAtIndexPath:indexPath animated:YES];
+        }
 		
 		if (animated){
 			
@@ -492,6 +508,12 @@
 			[contentView.layer setAnchorPoint:CGPointMake(0, 0.5)];
 			[contentView.layer setPosition:CGPointMake(0, contentView.layer.position.y)];
 			[contentView.layer addAnimation:[self bounceAnimationWithHideDuration:hideDuration initialXOrigin:originalX] 
+									 forKey:@"bounce"];
+            
+            CGFloat backViewOriginalX = backView.layer.position.x;
+            [backView.layer setAnchorPoint:CGPointMake(0, 0.5)];
+			[backView.layer setPosition:CGPointMake(self.frame.size.width, contentView.layer.position.y)];
+			[backView.layer addAnimation:[self bounceAnimationWithHideDuration:hideDuration initialXOrigin:backViewOriginalX]
 									 forKey:@"bounce"];
 			
 			
@@ -512,6 +534,9 @@
 	
 	[contentView.layer setAnchorPoint:CGPointMake(0, 0.5)];
 	[contentView.layer setPosition:CGPointMake(0, contentView.layer.position.y)];
+    
+    [backView.layer setAnchorPoint:CGPointMake(0, 0.5)];
+	[backView.layer setPosition:CGPointMake(self.frame.size.width, contentView.layer.position.y)];
 	
 	[backView.layer setHidden:YES];
 	[backView.layer setOpacity:1.0];

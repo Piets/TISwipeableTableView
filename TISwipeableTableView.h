@@ -46,6 +46,7 @@
 - (void)tableView:(UITableView *)tableView didSwipeCellAtIndexPath:(NSIndexPath *)indexPath;
 
 - (void)revealBackViewAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated;
+- (void)hideBackViewAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated;
 - (void)hideVisibleBackView:(BOOL)animated;
 
 @end
@@ -63,6 +64,7 @@
 @protocol TISwipeableTableViewCellDelegate <NSObject>
 - (BOOL)tableView:(UITableView *)tableView shouldSwipeCellAtIndexPath:(NSIndexPath *)indexPath;
 - (void)tableView:(UITableView *)tableView didSwipeCellAtIndexPath:(NSIndexPath *)indexPath;
+- (void)hideBackViewAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated;
 @end
 
 @interface TISwipeableTableViewCell : UITableViewCell <UIGestureRecognizerDelegate> {
