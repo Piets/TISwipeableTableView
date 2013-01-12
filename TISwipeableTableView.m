@@ -131,6 +131,13 @@
 
 }
 
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    [self setIndexOfVisibleBackView:nil];
+    [self setIndexOfPanningBackView:nil];
+    return 1;
+}
+
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	return ([indexPath compare:indexOfVisibleBackView] == NSOrderedSame) ? nil : indexPath;
 }
