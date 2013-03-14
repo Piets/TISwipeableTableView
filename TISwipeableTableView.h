@@ -94,4 +94,6 @@
 - (void)revealBackViewAnimated:(BOOL)animated;
 - (void)hideBackViewAnimated:(BOOL)animated;
 
+- (void)cellWasPanned:(UIPanGestureRecognizer*)recognizer;
+
 @end
