@@ -387,19 +387,20 @@
 
                     oldStyle = self.selectionStyle;
                     [self setSelectionStyle:UITableViewCellSelectionStyleNone];
+                    [self onContentViewAndBackViewPanned:CGPointMake(translation.x, contentView.layer.position.y)];
                 }
                 else
                 {
                     [contentView.layer setPosition:CGPointMake(0, contentView.layer.position.y)];
                     [backView.layer setPosition:CGPointMake(0, contentView.layer.position.y)];
+                    [self onContentViewAndBackViewPanned:CGPointMake(0, contentView.layer.position.y)];
                 }
-                
 
             }
             else if (state==UIGestureRecognizerStateEnded || state==UIGestureRecognizerStateFailed || state==UIGestureRecognizerStateCancelled)
             {
                 CGPoint translation = [recognizer translationInView:self];
-                if (translation.x < -60)
+                if (translation.x < [self thresholdToHideBackView])
                 {
                     contentViewMoving = NO;
                     backView.layer.hidden = YES;
@@ -417,6 +418,16 @@
 		}
 
     }
+}
+
+- (float)thresholdToHideBackView
+{
+    return -60.0;
+}
+
+- (void)onContentViewAndBackViewPanned:(CGPoint)translation
+{
+    
 }
 
 - (void)cellWasSwiped:(UISwipeGestureRecognizer *)recognizer {
