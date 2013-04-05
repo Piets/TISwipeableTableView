@@ -32,6 +32,9 @@
 // - TISwipeableTableViewController
 //==========================================================
 
+NSString * const TISwipeableTableViewBackViewWillAppear;
+NSString * const TISwipeableTableViewBackViewDidAppear;
+
 @interface TISwipeableTableViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIGestureRecognizerDelegate>
 
 @property (nonatomic, strong) UITableView *tableView;

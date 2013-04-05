@@ -13,6 +13,9 @@
 // - TISwipeableTableViewController
 //==========================================================
 
+NSString * const TISwipeableTableViewBackViewWillAppear = @"TISwipeableTableViewBackViewWillAppear";
+NSString * const TISwipeableTableViewBackViewDidAppear = @"TISwipeableTableViewBackViewDidAppear";
+
 @interface TISwipeableTableViewController ()
 @property (nonatomic, strong) NSIndexPath * indexOfVisibleBackView;
 @property (nonatomic, strong) NSIndexPath * indexOfPanningBackView;
@@ -462,7 +465,10 @@
 		[backView.layer setHidden:NO];
 		[backView setNeedsDisplay];
 		
+		NSNotificationCenter* notifCenter = [NSNotificationCenter defaultCenter];
+		
 		[self backViewWillAppear:animated];
+		[notifCenter postNotificationName:TISwipeableTableViewBackViewWillAppear object:self];
 		
 		oldStyle = self.selectionStyle;
 		[self setSelectionStyle:UITableViewCellSelectionStyleNone];
@@ -487,6 +493,8 @@
 		else
 		{
 			[self backViewDidAppear:animated];
+			[notifCenter postNotificationName:TISwipeableTableViewBackViewDidAppear object:self];
+			
 			[self setSelected:NO];
 			
 			contentViewMoving = NO;
