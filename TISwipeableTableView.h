@@ -35,6 +35,14 @@
 NSString * const TISwipeableTableViewBackViewWillAppear;
 NSString * const TISwipeableTableViewBackViewDidAppear;
 
+// Notification posted when a row is selected
+NSString * const TISwipeableTableViewDidSelectRow;
+
+	// User info keys posted along with the above notification
+	NSString * const TISwipeableTableViewSelectedPathKey; // The selected index path
+	NSString * const TISwipeableTableViewVisiblePathsKey; // All index paths
+
+
 @interface TISwipeableTableViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIGestureRecognizerDelegate>
 
 @property (nonatomic, strong) UITableView *tableView;

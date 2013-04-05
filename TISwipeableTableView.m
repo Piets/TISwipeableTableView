@@ -16,6 +16,10 @@
 NSString * const TISwipeableTableViewBackViewWillAppear = @"TISwipeableTableViewBackViewWillAppear";
 NSString * const TISwipeableTableViewBackViewDidAppear = @"TISwipeableTableViewBackViewDidAppear";
 
+NSString * const TISwipeableTableViewDidSelectRow = @"TISwipeableTableViewDidSelectRow";
+	NSString * const TISwipeableTableViewSelectedPathKey = @"TISwipeableTableViewSelectedPath";
+	NSString * const TISwipeableTableViewVisiblePathsKey = @"TISwipeableTableViewVisiblePaths";
+
 @interface TISwipeableTableViewController ()
 @property (nonatomic, strong) NSIndexPath * indexOfVisibleBackView;
 @property (nonatomic, strong) NSIndexPath * indexOfPanningBackView;
@@ -147,6 +151,14 @@ NSString * const TISwipeableTableViewBackViewDidAppear = @"TISwipeableTableViewB
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[self hideVisibleBackView:YES];
+	
+	NSNotificationCenter* notifCenter = [NSNotificationCenter defaultCenter];
+	
+	[notifCenter postNotificationName:TISwipeableTableViewDidSelectRow
+							   object:self
+							 userInfo:
+	 @{TISwipeableTableViewSelectedPathKey : indexPath,
+	TISwipeableTableViewVisiblePathsKey : [tableView indexPathsForVisibleRows]}];
 }
 
 - (BOOL)tableView:(UITableView *)tableView shouldSwipeCellAtIndexPath:(NSIndexPath *)indexPath {
