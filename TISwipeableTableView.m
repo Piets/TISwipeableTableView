@@ -57,6 +57,14 @@ NSString * const TISwipeableTableViewDidSelectRow = @"TISwipeableTableViewDidSel
     CGPoint velocity = [gesture velocityInView:self.tableView];
     UIGestureRecognizerState state = [gesture state];
     
+    if (self.tableView.isDragging)
+    {
+        [gesture setEnabled:NO];
+        [gesture setEnabled:YES];
+        
+        [self hideVisibleBackView:YES];
+    }
+
     if (fabs(velocity.x)>fabs(velocity.y))
     {
         CGPoint location = [gesture locationInView:self.tableView];
