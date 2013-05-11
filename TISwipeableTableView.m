@@ -539,7 +539,7 @@ NSString * const TISwipeableTableViewDidSelectRow = @"TISwipeableTableViewDidSel
 		
 		if (animated){
 			
-			CGFloat hideDuration = 0.09;
+			CGFloat hideDuration = 0.15;
 
 			[backView.layer setOpacity:0.0];
 			CABasicAnimation * hideAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
