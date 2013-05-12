@@ -148,6 +148,11 @@ NSString * const TISwipeableTableViewDidSelectRow = @"TISwipeableTableViewDidSel
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
+    if (self.indexOfVisibleBackView)
+    {
+        [self hideVisibleBackView:YES];
+    }
+    
     [self setIndexOfVisibleBackView:nil];
     [self setIndexOfPanningBackView:nil];
     return 1;
