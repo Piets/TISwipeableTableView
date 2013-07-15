@@ -223,13 +223,28 @@ NSString * const TISwipeableTableViewDidSelectRow = @"TISwipeableTableViewDidSel
 
 @implementation TISwipeableTableViewCellView
 - (void)drawRect:(CGRect)rect {
-	[(TISwipeableTableViewCell *)self.superview drawContentView:rect];
+    if ([self.superview isKindOfClass:[TISwipeableTableViewCell class]])
+    {
+        [(TISwipeableTableViewCell *)self.superview drawContentView:rect];
+    }
+	else if ([self.superview.superview isKindOfClass:[TISwipeableTableViewCell class]])
+    {
+        [(TISwipeableTableViewCell *)self.superview.superview drawContentView:rect];
+    }
 }
 @end
 
 @implementation TISwipeableTableViewCellBackView
 - (void)drawRect:(CGRect)rect {
-	[(TISwipeableTableViewCell *)self.superview drawBackView:rect];
+    if ([self.superview isKindOfClass:[TISwipeableTableViewCell class]])
+    {
+        [(TISwipeableTableViewCell *)self.superview drawBackView:rect];
+    }
+	else if ([self.superview.superview isKindOfClass:[TISwipeableTableViewCell class]])
+    {
+        [(TISwipeableTableViewCell *)self.superview.superview drawBackView:rect];
+    }
+	
 }
 
 @end
