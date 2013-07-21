@@ -106,5 +106,6 @@ NSString * const TISwipeableTableViewDidSelectRow;
 - (void)hideBackViewAnimated:(BOOL)animated;
 
 - (void)cellWasPanned:(UIPanGestureRecognizer*)recognizer;
+- (void)cellWasPannedWithTranslation:(CGPoint)translation state:(UIGestureRecognizerState)state;
 
 @end

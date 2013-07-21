@@ -379,9 +379,17 @@ NSString * const TISwipeableTableViewDidSelectRow = @"TISwipeableTableViewDidSel
 
 #pragma mark - Back View Show / Hide
 
-- (void)cellWasPanned:(UIPanGestureRecognizer*)recognizer{
+- (void)cellWasPanned:(UIPanGestureRecognizer*)recognizer
+{
+    UIGestureRecognizerState state = recognizer.state;
+    CGPoint translation = [recognizer translationInView:self];
     
-    UITableView * tableView = (UITableView *)self.superview;
+    [self cellWasPannedWithTranslation:translation state:state];
+}
+
+- (void)cellWasPannedWithTranslation:(CGPoint)translation state:(UIGestureRecognizerState)state
+{
+    UITableView *tableView = (UITableView *)self.superview;
     
     if ([self.delegate respondsToSelector:@selector(tableView:shouldSwipeCellAtIndexPath:)]){
         
@@ -389,7 +397,7 @@ NSString * const TISwipeableTableViewDidSelectRow = @"TISwipeableTableViewDidSel
 		
 		if ([self.delegate tableView:tableView shouldSwipeCellAtIndexPath:myIndexPath]){
 			
-            UIGestureRecognizerState state = [recognizer state];
+//            UIGestureRecognizerState state = [recognizer state];
             if (state==UIGestureRecognizerStateBegan)
             {
                 if ([self.delegate respondsToSelector:@selector(tableView:didSwipeCellAtIndexPath:)]){
@@ -399,7 +407,7 @@ NSString * const TISwipeableTableViewDidSelectRow = @"TISwipeableTableViewDidSel
             }
             else if (state==UIGestureRecognizerStateChanged)
             {
-                CGPoint translation = [recognizer translationInView:self];
+//                CGPoint translation = [recognizer translationInView:self];
                 
                 [contentView.layer setAnchorPoint:CGPointMake(0, 0.5)];
                 [backView.layer setAnchorPoint:CGPointMake(0, 0.5)];
@@ -427,7 +435,7 @@ NSString * const TISwipeableTableViewDidSelectRow = @"TISwipeableTableViewDidSel
             }
             else if (state==UIGestureRecognizerStateEnded || state==UIGestureRecognizerStateFailed || state==UIGestureRecognizerStateCancelled)
             {
-                CGPoint translation = [recognizer translationInView:self];
+//                CGPoint translation = [recognizer translationInView:self];
                 if (translation.x < [self thresholdToHideBackView])
                 {
                     contentViewMoving = NO;
