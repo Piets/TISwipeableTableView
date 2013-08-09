@@ -397,6 +397,10 @@ NSString * const TISwipeableTableViewDidSelectRow = @"TISwipeableTableViewDidSel
 - (void)cellWasPanned:(UIPanGestureRecognizer*)recognizer{
     
     UITableView * tableView = (UITableView *)self.superview;
+    if (![tableView isKindOfClass:[UITableView class]])
+    {
+        tableView = (UITableView *)self.superview.superview;
+    }
     
     if ([self.delegate respondsToSelector:@selector(tableView:shouldSwipeCellAtIndexPath:)]){
         
@@ -476,6 +480,10 @@ NSString * const TISwipeableTableViewDidSelectRow = @"TISwipeableTableViewDidSel
 - (void)cellWasSwiped:(UISwipeGestureRecognizer *)recognizer {
     
 	UITableView * tableView = (UITableView *)self.superview;
+    if (![tableView isKindOfClass:[UITableView class]])
+    {
+        tableView = (UITableView *)self.superview.superview;
+    }
 	
 	if ([self.delegate respondsToSelector:@selector(tableView:shouldSwipeCellAtIndexPath:)]){
 	
@@ -553,6 +561,10 @@ NSString * const TISwipeableTableViewDidSelectRow = @"TISwipeableTableViewDidSel
         if ([self.delegate respondsToSelector:@selector(hideBackViewAtIndexPath:animated:)])
         {
             UITableView * tableView = (UITableView *)self.superview;
+            if (![tableView isKindOfClass:[UITableView class]])
+            {
+                tableView = (UITableView *)self.superview.superview;
+            }
             NSIndexPath *indexPath = [tableView indexPathForCell:self];
             [self.delegate hideBackViewAtIndexPath:indexPath animated:YES];
         }
