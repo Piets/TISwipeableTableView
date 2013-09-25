@@ -461,7 +461,9 @@ NSString * const TISwipeableTableViewDidSelectRow = @"TISwipeableTableViewDidSel
                     contentViewMoving = NO;
                     backView.layer.hidden = YES;
                     
+                    [self onRevealingBackViewFromPosition:backView.layer.position];
                     [self revealBackViewAnimated:YES];
+                    
                 }
                 else
                 {
@@ -474,6 +476,11 @@ NSString * const TISwipeableTableViewDidSelectRow = @"TISwipeableTableViewDidSel
 		}
 
     }
+}
+
+- (void)onRevealingBackViewFromPosition:(CGPoint)position
+{
+    
 }
 
 - (TISwipeableTableViewController*)viewController
