@@ -625,28 +625,35 @@ NSString * const TISwipeableTableViewDidSelectRow = @"TISwipeableTableViewDidSel
 		
 		if (animated){
 			
-			CGFloat hideDuration = 0.15;
-
-//			[backView.layer setOpacity:0.0];
-//			CABasicAnimation * hideAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
-//			[hideAnimation setFromValue:[NSNumber numberWithFloat:1.0]];
-//			[hideAnimation setToValue:[NSNumber numberWithFloat:0.0]];
-//			[hideAnimation setDuration:hideDuration];
-//			[hideAnimation setRemovedOnCompletion:NO];
-//			[hideAnimation setDelegate:self];
-//			[backView.layer addAnimation:hideAnimation forKey:@"hide"];
-			
-			CGFloat originalX = contentView.layer.position.x;
-			[contentView.layer setAnchorPoint:CGPointMake(0, 0.5)];
-			[contentView.layer setPosition:CGPointMake(0, contentView.layer.position.y)];
-			[contentView.layer addAnimation:[self bounceAnimationWithHideDuration:hideDuration initialXOrigin:originalX finalXOrigin:0]
-									 forKey:@"bounce"];
+//			CGFloat hideDuration = 0.15;
+//			
+//			CGFloat originalX = contentView.layer.position.x;
+//			[contentView.layer setAnchorPoint:CGPointMake(0, 0.5)];
+//			[contentView.layer setPosition:CGPointMake(0, contentView.layer.position.y)];
+//			[contentView.layer addAnimation:[self bounceAnimationWithHideDuration:hideDuration initialXOrigin:originalX finalXOrigin:0]
+//									 forKey:@"bounce"];
+//            
+//            CGFloat backViewOriginalX = backView.layer.position.x;
+//            [backView.layer setAnchorPoint:CGPointMake(0, 0.5)];
+//			[backView.layer setPosition:CGPointMake(self.frame.size.width, contentView.layer.position.y)];
+//			[backView.layer addAnimation:[self bounceAnimationWithHideDuration:hideDuration initialXOrigin:backViewOriginalX finalXOrigin:self.frame.size.width] forKey:@"bounce"];
             
-            CGFloat backViewOriginalX = backView.layer.position.x;
-            [backView.layer setAnchorPoint:CGPointMake(0, 0.5)];
-			[backView.layer setPosition:CGPointMake(self.frame.size.width, contentView.layer.position.y)];
-			[backView.layer addAnimation:[self bounceAnimationWithHideDuration:hideDuration initialXOrigin:backViewOriginalX finalXOrigin:self.frame.size.width] forKey:@"bounce"];
-			
+            
+            float duration = 0.35;
+            float damping = 0.6f;
+            float velocity = 0.2f;
+            
+            [UIView animateWithDuration:duration delay:0.0 usingSpringWithDamping:damping initialSpringVelocity:velocity options:UIViewAnimationCurveLinear animations:^{
+                
+                [contentView.layer setAnchorPoint:CGPointMake(0, 0.5)];
+                [contentView.layer setPosition:CGPointMake(0, contentView.layer.position.y)];
+                
+                [backView.layer setAnchorPoint:CGPointMake(0, 0.5)];
+                [backView.layer setPosition:CGPointMake(self.frame.size.width, contentView.layer.position.y)];
+                
+            } completion:^(BOOL finished) {
+                [self resetViews:YES];
+            }];
 			
 		}
 		else
