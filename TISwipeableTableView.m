@@ -562,16 +562,15 @@ NSString * const TISwipeableTableViewDidSelectRow = @"TISwipeableTableViewDidSel
 		if (animated){
             
             float ratio = backView.frame.origin.x/self.frame.size.width;
-            float duration = 0.1 + 0.35 * ratio;
-            float damping = 0.5f +  0.5f * (1-ratio);
+            float duration = 0.1 + 0.25 * ratio;
+            float damping = 0.7f + 0.5f * (1-ratio);
             float velocity = 0.2f;
             
-            
             [UIView animateWithDuration:duration delay:0.0 usingSpringWithDamping:damping initialSpringVelocity:velocity options:UIViewAnimationCurveLinear animations:^{
-                
+            
                 [contentView.layer setAnchorPoint:CGPointMake(0, 0.5)];
                 [backView.layer setAnchorPoint:CGPointMake(0, 0.5)];
-                [contentView.layer setPosition:CGPointMake(-contentView.frame.size.width, contentView.layer.position.y)];
+                [contentView.layer setPosition:CGPointMake(-contentView.frame.size.width-5, contentView.layer.position.y)];
                 [backView.layer setPosition:CGPointMake(self.frame.size.width-contentView.frame.size.width, contentView.layer.position.y)];
                 
             } completion:^(BOOL finished) {
