@@ -21,12 +21,13 @@ NSString * const TISwipeableTableViewDidSelectRow = @"TISwipeableTableViewDidSel
 	NSString * const TISwipeableTableViewVisiblePathsKey = @"TISwipeableTableViewVisiblePaths";
 
 @interface TISwipeableTableViewController ()
-@property (nonatomic, strong) NSIndexPath * indexOfVisibleBackView;
-@property (nonatomic, strong) NSIndexPath * indexOfPanningBackView;
+//@property (nonatomic, strong) NSIndexPath * indexOfVisibleBackView;
+//@property (nonatomic, strong) NSIndexPath * indexOfPanningBackView;
 @end
 
 @implementation TISwipeableTableViewController
 @synthesize indexOfVisibleBackView;
+@synthesize indexOfPanningBackView;
 
 - (id)initWithStyle:(UITableViewStyle)tableViewStyle
 {
@@ -391,7 +392,7 @@ NSString * const TISwipeableTableViewDidSelectRow = @"TISwipeableTableViewDidSel
 }
 
 - (void)backViewDidDisappear:(BOOL)animated {
-	
+
 }
 
 //===============================//

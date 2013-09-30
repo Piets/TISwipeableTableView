@@ -46,7 +46,8 @@ NSString * const TISwipeableTableViewDidSelectRow;
 @interface TISwipeableTableViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIGestureRecognizerDelegate>
 
 @property (nonatomic, strong) UITableView *tableView;
-@property (nonatomic, strong, readonly) NSIndexPath * indexOfVisibleBackView;
+@property (nonatomic, strong) NSIndexPath * indexOfVisibleBackView;
+@property (nonatomic, strong) NSIndexPath * indexOfPanningBackView;
 @property (nonatomic, assign) UITableViewStyle tableViewStyle;
 @property (nonatomic, strong) UIPanGestureRecognizer *tablePanGestureRecognizer;
 
