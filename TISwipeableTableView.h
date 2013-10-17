@@ -49,7 +49,8 @@ NSString * const TISwipeableTableViewDidSelectRow;
 @property (nonatomic, strong) NSIndexPath * indexOfVisibleBackView;
 @property (nonatomic, strong) NSIndexPath * indexOfPanningBackView;
 @property (nonatomic, assign) UITableViewStyle tableViewStyle;
-@property (nonatomic, strong) UIPanGestureRecognizer *tablePanGestureRecognizer;
+@property (nonatomic, strong) UIPanGestureRecognizer *tableLeftPanGestureRecognizer;
+@property (nonatomic, strong) UIPanGestureRecognizer *tableRightPanGestureRecognizer;
 
 - (id)initWithStyle:(UITableViewStyle)tableViewStyle;
 
@@ -61,7 +62,8 @@ NSString * const TISwipeableTableViewDidSelectRow;
 - (void)hideBackViewAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated;
 - (void)hideVisibleBackView:(BOOL)animated;
 
-- (Class)tablePanGestureRecognizerClass;
+- (Class)tableLeftPanGestureRecognizerClass;
+- (Class)tableRightPanGestureRecognizerClass;
 
 @end
 
