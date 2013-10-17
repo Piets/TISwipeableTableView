@@ -48,9 +48,14 @@ NSString * const TISwipeableTableViewDidSelectRow = @"TISwipeableTableViewDidSel
     _tableView.dataSource = self;
     [self.view addSubview:_tableView];
     
-    self.tablePanGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(onTableViewPanned:)];
+    self.tablePanGestureRecognizer = [[[self tablePanGestureRecognizerClass] alloc] initWithTarget:self action:@selector(onTableViewPanned:)];
     [self.tablePanGestureRecognizer setDelegate:self];
     [_tableView addGestureRecognizer:self.tablePanGestureRecognizer];
+}
+
+- (Class)tablePanGestureRecognizerClass
+{
+    return [UIPanGestureRecognizer class];
 }
 
 - (void)onTableViewPanned:(UIPanGestureRecognizer*)gesture

@@ -61,6 +61,8 @@ NSString * const TISwipeableTableViewDidSelectRow;
 - (void)hideBackViewAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated;
 - (void)hideVisibleBackView:(BOOL)animated;
 
+- (Class)tablePanGestureRecognizerClass;
+
 @end
 
 //==========================================================
