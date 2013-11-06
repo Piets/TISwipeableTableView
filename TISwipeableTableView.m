@@ -88,6 +88,12 @@ NSString * const TISwipeableTableViewDidSelectRow = @"TISwipeableTableViewDidSel
         {
             if (velocity.x<=0)
             {
+                // check if this condition is correct
+                if (self.indexOfVisibleBackView)
+                {
+                    [self checkThatIndexOfVisibleBackViewIsValid];
+                }
+                
                 if ([self.indexOfVisibleBackView isEqual:indexPath])
                 {
                     self.indexOfPanningBackView = nil;
@@ -173,8 +179,44 @@ NSString * const TISwipeableTableViewDidSelectRow = @"TISwipeableTableViewDidSel
     return 1;
 }
 
+- (void)checkThatIndexOfVisibleBackViewIsValid
+{
+    TISwipeableTableViewCell *cell = (TISwipeableTableViewCell*)[self.tableView cellForRowAtIndexPath:indexOfVisibleBackView];
+    if ([cell isKindOfClass:[TISwipeableTableViewCell class]])
+    {
+        // check of make sure that the content view is visible
+        // if the back view is hidden, it means content view is visible
+        // so the state is wrong
+        if (cell.backView.hidden)
+        {
+            [self setIndexOfVisibleBackView:nil];
+        }
+    }
+}
+
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ([indexPath compare:indexOfVisibleBackView] == NSOrderedSame) ? nil : indexPath;
+
+    // same index path
+    if ([indexPath compare:indexOfVisibleBackView] == NSOrderedSame)
+    {
+        [self checkThatIndexOfVisibleBackViewIsValid];
+        if (indexOfVisibleBackView)
+        {
+            return nil;
+        }
+        else
+        {
+            return indexPath;
+        }
+    }
+    
+    // different index path
+    else
+    {
+        return indexPath;
+    }
+    
+//    return ([indexPath compare:indexOfVisibleBackView] == NSOrderedSame) ? nil : indexPath;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
