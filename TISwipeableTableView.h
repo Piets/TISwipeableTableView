@@ -51,6 +51,7 @@ NSString * const TISwipeableTableViewDidSelectRow;
 @property (nonatomic, assign) UITableViewStyle tableViewStyle;
 @property (nonatomic, strong) UIPanGestureRecognizer *tableLeftPanGestureRecognizer;
 @property (nonatomic, strong) UIPanGestureRecognizer *tableRightPanGestureRecognizer;
+@property (nonatomic, retain) UIRefreshControl *refreshControl;
 
 - (id)initWithStyle:(UITableViewStyle)tableViewStyle;
 
@@ -97,6 +98,7 @@ NSString * const TISwipeableTableViewDidSelectRow;
 @property (nonatomic, readonly) UIView * backView;
 @property (nonatomic, assign) BOOL contentViewMoving;
 @property (nonatomic, assign) BOOL shouldBounce;
+@property (nonatomic, assign) CGFloat backViewInset;
 @property (nonatomic, unsafe_unretained) id<TISwipeableTableViewCellDelegate> delegate;
 
 - (void)drawContentView:(CGRect)rect;

@@ -86,7 +86,7 @@ NSString * const TISwipeableTableViewDidSelectRow = @"TISwipeableTableViewDidSel
         NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
         if (state==UIGestureRecognizerStateBegan)
         {
-            if (velocity.x<=0)
+            if (velocity.x>=0)
             {
                 // check if this condition is correct
                 if (self.indexOfVisibleBackView)
@@ -368,6 +368,7 @@ NSString * const TISwipeableTableViewDidSelectRow = @"TISwipeableTableViewDidSel
 	contentViewMoving = NO;
 	shouldBounce = YES;
 	oldStyle = self.selectionStyle;
+	self.backViewInset = 0.f;
 }
 
 - (void)prepareForReuse {
@@ -386,7 +387,8 @@ NSString * const TISwipeableTableViewDidSelectRow = @"TISwipeableTableViewDidSel
 	[contentView setFrame:newBounds];
     
     CGRect backViewBounds = newBounds;
-    backViewBounds.size.width += 100;
+//    backViewBounds.size.width += 100;
+	backViewBounds.origin.x = -backViewBounds.size.width;
     [backView setFrame:backViewBounds];
 }
 
@@ -492,10 +494,10 @@ NSString * const TISwipeableTableViewDidSelectRow = @"TISwipeableTableViewDidSel
                 
                 [contentView.layer setAnchorPoint:CGPointMake(0, 0.5)];
                 [backView.layer setAnchorPoint:CGPointMake(0, 0.5)];
-                if (translation.x<=0)
+                if (translation.x >= 0)
                 {
                     [contentView.layer setPosition:CGPointMake(translation.x, contentView.layer.position.y)];
-                    [backView.layer setPosition:CGPointMake(self.frame.size.width+translation.x, contentView.layer.position.y)];
+                    [backView.layer setPosition:CGPointMake(translation.x - backView.layer.bounds.size.width + self.backViewInset , contentView.layer.position.y)];
                     
                     contentViewMoving = YES;
                     
@@ -517,7 +519,7 @@ NSString * const TISwipeableTableViewDidSelectRow = @"TISwipeableTableViewDidSel
             else if (state==UIGestureRecognizerStateEnded || state==UIGestureRecognizerStateFailed || state==UIGestureRecognizerStateCancelled)
             {
 //                CGPoint translation = [recognizer translationInView:self];
-                if (translation.x < [self thresholdToHideBackView])
+                if (translation.x > [self thresholdToHideBackView])
                 {
                     contentViewMoving = NO;
                     backView.layer.hidden = YES;
@@ -561,7 +563,7 @@ NSString * const TISwipeableTableViewDidSelectRow = @"TISwipeableTableViewDidSel
 
 - (float)thresholdToHideBackView
 {
-    return -60.0;
+    return 60.0;
 }
 
 - (void)onContentViewAndBackViewPanned:(CGPoint)translation
@@ -618,7 +620,7 @@ NSString * const TISwipeableTableViewDidSelectRow = @"TISwipeableTableViewDidSel
     
 		if (animated){
             
-            float ratio = backView.frame.origin.x/self.frame.size.width;
+            float ratio = contentView.frame.origin.x/ (self.frame.size.width - self.backViewInset);
             float duration = 0.1 + 0.25 * ratio;
             float damping = 0.7f + 0.5f * (1-ratio);
             float velocity = 0.2f;
@@ -627,8 +629,8 @@ NSString * const TISwipeableTableViewDidSelectRow = @"TISwipeableTableViewDidSel
             
                 [contentView.layer setAnchorPoint:CGPointMake(0, 0.5)];
                 [backView.layer setAnchorPoint:CGPointMake(0, 0.5)];
-                [contentView.layer setPosition:CGPointMake(-contentView.frame.size.width-5, contentView.layer.position.y)];
-                [backView.layer setPosition:CGPointMake(self.frame.size.width-contentView.frame.size.width, contentView.layer.position.y)];
+                [contentView.layer setPosition:CGPointMake(contentView.frame.size.width-self.backViewInset, contentView.layer.position.y)];
+                [backView.layer setPosition:CGPointMake(0.f, contentView.layer.position.y)];
                 
             } completion:^(BOOL finished) {
                 
@@ -653,8 +655,8 @@ NSString * const TISwipeableTableViewDidSelectRow = @"TISwipeableTableViewDidSel
 		{
             [contentView.layer setAnchorPoint:CGPointMake(0, 0.5)];
             [backView.layer setAnchorPoint:CGPointMake(0, 0.5)];
-            [contentView.layer setPosition:CGPointMake(-contentView.frame.size.width, contentView.layer.position.y)];
-            [backView.layer setPosition:CGPointMake(self.frame.size.width-contentView.frame.size.width, contentView.layer.position.y)];
+            [contentView.layer setPosition:CGPointMake(contentView.frame.size.width-self.backViewInset, contentView.layer.position.y)];
+            [backView.layer setPosition:CGPointMake(0.f, contentView.layer.position.y)];
             
 			[self backViewDidAppear:animated];
 			[notifCenter postNotificationName:TISwipeableTableViewBackViewDidAppear object:self];
@@ -712,7 +714,7 @@ NSString * const TISwipeableTableViewDidSelectRow = @"TISwipeableTableViewDidSel
                 [contentView.layer setPosition:CGPointMake(0, contentView.layer.position.y)];
                 
                 [backView.layer setAnchorPoint:CGPointMake(0, 0.5)];
-                [backView.layer setPosition:CGPointMake(self.frame.size.width, contentView.layer.position.y)];
+                [backView.layer setPosition:CGPointMake(-self.frame.size.width, contentView.layer.position.y)];
                 
             } completion:^(BOOL finished) {
                 [self resetViews:YES];
@@ -737,7 +739,7 @@ NSString * const TISwipeableTableViewDidSelectRow = @"TISwipeableTableViewDidSel
 	[contentView.layer setPosition:CGPointMake(0, contentView.layer.position.y)];
     
     [backView.layer setAnchorPoint:CGPointMake(0, 0.5)];
-	[backView.layer setPosition:CGPointMake(self.frame.size.width, contentView.layer.position.y)];
+	[backView.layer setPosition:CGPointMake(-self.frame.size.width, contentView.layer.position.y)];
 	
 	[backView.layer setHidden:YES];
 	[backView.layer setOpacity:1.0];
